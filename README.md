@@ -1,5 +1,7 @@
 # Cocos Nuts - React Native
 
+[![CI](https://github.com/mnofresno/cocos-nuts/actions/workflows/ci.yml/badge.svg)](https://github.com/mnofresno/cocos-nuts/actions/workflows/ci.yml)
+
 Scaffold inicial en React Native (Expo + Typescript).
 
 ## Requisitos
