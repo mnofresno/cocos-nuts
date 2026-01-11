@@ -1,1 +1,1 @@
-import "@testing-library/react-native/extend-expect";
+// Intentionally empty; add test setup here when needed.
