@@ -29,11 +29,6 @@ docker build -t cocos-nuts-web .
 docker run -p 8080:80 cocos-nuts-web
 ```
 
-Con docker compose:
-```bash
-docker compose up --build
-```
-
 ## Tests
 ```bash
 npm test
