@@ -48,6 +48,8 @@ jobs:
   release-apk:
     needs: verify-ci
     runs-on: ubuntu-latest
+    env:
+      EXPO_PUBLIC_API_BASE_URL: ${{ vars.API_BASE_URL || 'https://dummy-api-topaz.vercel.app' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

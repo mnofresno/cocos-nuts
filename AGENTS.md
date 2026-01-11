@@ -17,6 +17,7 @@ Desarrollar la app de challenge en React Native + TypeScript según `challenge-d
 - [x] README: badges por workflow (tests, lint, build, typecheck)
 - [x] CI: versionado automatico de la app
 - [x] CI: release APK Android en GitHub Releases
+- [x] API base URL configurable via variable de entorno para releases
 - [x] Pantalla /instruments: listar ticker, nombre, ultimo precio y retorno (ultimo precio vs cierre)
 - [ ] Pantalla /portfolio: listar ticker, cantidad, valor de mercado, ganancia y rendimiento total (usar avg_cost_price)
 - [ ] Pantalla /search: buscador por ticker

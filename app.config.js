@@ -27,11 +27,17 @@ const baseVersion = pkg.version || baseConfig.version || "1.0.0";
 const version = process.env.APP_VERSION || buildVersion(baseVersion, commitCount);
 const versionCodeRaw = process.env.APP_VERSION_CODE || commitCount;
 const versionCode = Number.parseInt(String(versionCodeRaw), 10) || 1;
+const apiBaseUrl =
+  process.env.EXPO_PUBLIC_API_BASE_URL || "https://dummy-api-topaz.vercel.app";
 
 module.exports = {
   expo: {
     ...baseConfig,
     version,
+    extra: {
+      ...(baseConfig.extra || {}),
+      apiBaseUrl
+    },
     ios: {
       ...(baseConfig.ios || {}),
       buildNumber: version
