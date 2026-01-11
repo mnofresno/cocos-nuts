@@ -5,7 +5,7 @@
 - [x] README: badges por workflow (tests, lint, build, typecheck)
 - [x] CI: versionado automatico de la app
 - [x] CI: release APK Android en GitHub Releases
-- [ ] Pantalla /instruments: listar ticker, nombre, ultimo precio y retorno (ultimo precio vs cierre)
+- [x] Pantalla /instruments: listar ticker, nombre, ultimo precio y retorno (ultimo precio vs cierre)
 - [ ] Pantalla /portfolio: listar ticker, cantidad, valor de mercado, ganancia y rendimiento total (usar avg_cost_price)
 - [ ] Pantalla /search: buscador por ticker
 - [ ] Ordenes: modal con formulario (BUY/SELL, MARKET/LIMIT, cantidad, precio solo para LIMIT) y POST /orders
