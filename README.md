@@ -1,6 +1,9 @@
 # Cocos Nuts - React Native
 
-[![CI](https://github.com/mnofresno/cocos-nuts/actions/workflows/ci.yml/badge.svg)](https://github.com/mnofresno/cocos-nuts/actions/workflows/ci.yml)
+[![Tests](https://github.com/mnofresno/cocos-nuts/actions/workflows/tests.yml/badge.svg)](https://github.com/mnofresno/cocos-nuts/actions/workflows/tests.yml)
+[![Lint](https://github.com/mnofresno/cocos-nuts/actions/workflows/lint.yml/badge.svg)](https://github.com/mnofresno/cocos-nuts/actions/workflows/lint.yml)
+[![Build](https://github.com/mnofresno/cocos-nuts/actions/workflows/build.yml/badge.svg)](https://github.com/mnofresno/cocos-nuts/actions/workflows/build.yml)
+[![Typecheck](https://github.com/mnofresno/cocos-nuts/actions/workflows/typecheck.yml/badge.svg)](https://github.com/mnofresno/cocos-nuts/actions/workflows/typecheck.yml)
 
 Scaffold inicial en React Native (Expo + Typescript).
 

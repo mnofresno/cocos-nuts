@@ -1,10 +1,10 @@
-name: CI
+name: Lint
 
 on:
   push:
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,7 +16,5 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Lint
+      - name: Run linter
         run: npm run lint
-      - name: Run tests
-        run: npm test

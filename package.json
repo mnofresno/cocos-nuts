@@ -9,6 +9,7 @@
     "web": "expo start --web",
     "export:web": "expo export --platform web",
     "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit",
     "test": "jest"
   },
   "dependencies": {
