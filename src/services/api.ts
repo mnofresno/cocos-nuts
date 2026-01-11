@@ -9,6 +9,15 @@ export type Instrument = {
   close_price: number;
 };
 
+export type PortfolioItem = {
+  id: number;
+  ticker: string;
+  name: string;
+  quantity: number;
+  last_price: number;
+  avg_cost_price: number;
+};
+
 export async function fetchInstruments(signal?: AbortSignal) {
   const response = await fetch(`${API_BASE_URL}/instruments`, { signal });
   if (!response.ok) {
@@ -16,4 +25,13 @@ export async function fetchInstruments(signal?: AbortSignal) {
   }
   const data = await response.json();
   return data as Instrument[];
+}
+
+export async function fetchPortfolio(signal?: AbortSignal) {
+  const response = await fetch(`${API_BASE_URL}/portfolio`, { signal });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch portfolio (${response.status})`);
+  }
+  const data = await response.json();
+  return data as PortfolioItem[];
 }
