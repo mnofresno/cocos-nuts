@@ -1,0 +1,16 @@
+- [ ] Scaffold react native project structure
+- [ ] Basic CI to run tests
+- [ ] Pantalla /instruments: listar ticker, nombre, ultimo precio y retorno (ultimo precio vs cierre)
+- [ ] Pantalla /portfolio: listar ticker, cantidad, valor de mercado, ganancia y rendimiento total (usar avg_cost_price)
+- [ ] Pantalla /search: buscador por ticker
+- [ ] Ordenes: modal con formulario (BUY/SELL, MARKET/LIMIT, cantidad, precio solo para LIMIT) y POST /orders
+- [ ] Ordenes: mostrar id y status devuelto (PENDING, REJECTED, FILLED)
+- [ ] Ordenes: validar reglas de estado segun tipo (LIMIT -> PENDING/REJECTED, MARKET -> REJECTED/FILLED)
+- [ ] Ordenes: permitir cantidad exacta o monto en pesos (calcular cantidad max sin fracciones con ultimo precio)
+- [ ] Precios mostrados en pesos
+- [ ] Calculos portfolio: valor de mercado = quantity * last_price; ganancia y rendimiento usando avg_cost_price
+- [ ] README.md: instrucciones de instalacion/ejecucion y decisiones tecnicas
+- [ ] Arquitectura: estructura mantenible y escalable
+- [ ] Manejo de errores robusto
+- [ ] State management adecuado
+- [ ] Unit tests si aplica
