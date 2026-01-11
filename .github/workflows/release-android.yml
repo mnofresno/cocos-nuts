@@ -10,7 +10,43 @@ permissions:
   contents: write
 
 jobs:
+  verify-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required CI workflows
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const required = ["Tests", "Lint", "Build", "Typecheck"];
+            const { owner, repo } = context.repo;
+            const { data } = await github.rest.actions.listWorkflowRunsForRepo({
+              owner,
+              repo,
+              per_page: 100,
+              event: "push",
+              head_sha: context.sha
+            });
+            const runs = data.workflow_runs;
+            const byName = new Map();
+            for (const run of runs) {
+              if (required.includes(run.name)) byName.set(run.name, run);
+            }
+            const missing = required.filter((name) => !byName.has(name));
+            if (missing.length) {
+              core.setFailed(`Missing workflow runs: ${missing.join(", ")}`);
+              return;
+            }
+            const failed = required.filter(
+              (name) => byName.get(name).conclusion !== "success"
+            );
+            if (failed.length) {
+              const details = failed
+                .map((name) => `${name}:${byName.get(name).conclusion}`)
+                .join(", ");
+              core.setFailed(`Workflows not successful: ${details}`);
+            }
   release-apk:
+    needs: verify-ci
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
