@@ -1,5 +1,6 @@
-- [ ] Scaffold react native project structure
-- [ ] Basic CI to run tests
+- [X] Scaffold react native project structure
+- [x] Basic CI to run tests
+- [x] CI: linter TypeScript y React
 - [ ] Pantalla /instruments: listar ticker, nombre, ultimo precio y retorno (ultimo precio vs cierre)
 - [ ] Pantalla /portfolio: listar ticker, cantidad, valor de mercado, ganancia y rendimiento total (usar avg_cost_price)
 - [ ] Pantalla /search: buscador por ticker
