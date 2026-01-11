@@ -35,7 +35,9 @@ jobs:
           echo "APP_VERSION=${MAJOR}.${MINOR}.${COUNT}" >> $GITHUB_ENV
           echo "APP_VERSION_CODE=${COUNT}" >> $GITHUB_ENV
       - name: Prebuild Android
-        run: npx expo prebuild --platform android --non-interactive
+        env:
+          CI: "1"
+        run: npx expo prebuild --platform android
       - name: Configure Android signing
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}

@@ -38,6 +38,7 @@ module.exports = {
     },
     android: {
       ...(baseConfig.android || {}),
+      package: "com.anonymous.cocosnuts",
       versionCode
     }
   }
