@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { fetchInstruments, Instrument } from "../services/api";
+import { listInstruments } from "../application/useCases";
+import { defaultPorts } from "../application/container";
+import { Instrument } from "../domain/instrument";
 
 type InstrumentsState = {
   loading: boolean;
@@ -16,7 +18,7 @@ export function useInstruments() {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchInstruments(controller.signal)
+    listInstruments({ signal: controller.signal, ports: defaultPorts })
       .then((data) => {
         setState({ loading: false, error: null, data });
       })

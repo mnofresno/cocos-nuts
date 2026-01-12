@@ -1,15 +1,8 @@
 import { useCallback, useState } from "react";
-import { placeOrder } from "../services/api";
-import { OrderPayload, OrderResponse, OrderStatus, OrderType } from "../types/orders";
-
-const STATUS_RULES: Record<OrderType, OrderStatus[]> = {
-  [OrderType.MARKET]: [OrderStatus.REJECTED, OrderStatus.FILLED],
-  [OrderType.LIMIT]: [OrderStatus.PENDING, OrderStatus.REJECTED]
-};
-
-function isStatusAllowed(type: OrderType, status: OrderStatus) {
-  return STATUS_RULES[type].includes(status);
-}
+import { submitOrder } from "../application/useCases";
+import { defaultPorts } from "../application/container";
+import { DomainError, HttpError } from "../domain/errors";
+import { isStatusAllowed, type OrderPayload, type OrderResponse } from "../domain/orders";
 
 type SubmitState = {
   submitting: boolean;
@@ -31,17 +24,16 @@ export function useSubmitOrder() {
   const submit = useCallback(async (payload: OrderPayload) => {
     setState({ submitting: true, error: null, result: null });
     try {
-      const result = await placeOrder(payload);
-      if (!isStatusAllowed(payload.type, result.status)) {
-        throw new Error(
-          `Estado ${result.status} no es válido para orden ${payload.type}`
-        );
-      }
+      const result = await submitOrder(payload, { ports: defaultPorts });
       setState({ submitting: false, error: null, result });
       return result;
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "No se pudo enviar la orden.";
+      let message = "No se pudo enviar la orden.";
+      if (error instanceof DomainError) {
+        message = error.message;
+      } else if (error instanceof Error && !(error instanceof HttpError)) {
+        message = error.message;
+      }
       setState({ submitting: false, error: message, result: null });
       throw error;
     }

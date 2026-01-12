@@ -1,14 +1,14 @@
 import { render, waitFor } from "@testing-library/react-native";
 import { useEffect } from "react";
 import { Text, View } from "react-native";
+import { listPortfolio } from "../src/application/useCases";
 import { usePortfolio } from "../src/hooks/usePortfolio";
-import { fetchPortfolio } from "../src/services/api";
 
-jest.mock("../src/services/api", () => ({
-  fetchPortfolio: jest.fn()
+jest.mock("../src/application/useCases", () => ({
+  listPortfolio: jest.fn()
 }));
 
-const mockFetchPortfolio = fetchPortfolio as jest.MockedFunction<typeof fetchPortfolio>;
+const mockListPortfolio = listPortfolio as jest.MockedFunction<typeof listPortfolio>;
 
 const samplePortfolio = [
   {
@@ -51,19 +51,19 @@ describe("usePortfolio", () => {
   });
 
   it("fetches and exposes portfolio data", async () => {
-    mockFetchPortfolio.mockResolvedValue(samplePortfolio);
+    mockListPortfolio.mockResolvedValue(samplePortfolio);
 
     const { getByTestId } = render(<PortfolioHookTester />);
 
     await waitFor(() => expect(getByTestId("loading").props.children).toBe("loaded"));
 
-    expect(mockFetchPortfolio).toHaveBeenCalledTimes(1);
+    expect(mockListPortfolio).toHaveBeenCalledTimes(1);
     expect(getByTestId("tickers").props.children).toBe("AL30,DYCA");
     expect(getByTestId("error").props.children).toBe("");
   });
 
   it("returns an error message when the request fails", async () => {
-    mockFetchPortfolio.mockRejectedValue(new Error("Network error"));
+    mockListPortfolio.mockRejectedValue(new Error("Network error"));
 
     const { getByTestId } = render(<PortfolioHookTester />);
 

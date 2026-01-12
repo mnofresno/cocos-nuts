@@ -2,7 +2,7 @@ import { render, RenderAPI, waitFor } from "@testing-library/react-native";
 import { useEffect } from "react";
 import { Text } from "react-native";
 import { useSubmitOrder } from "../../src/hooks/useSubmitOrder";
-import { OrderPayload, OrderSide, OrderType } from "../../src/types/orders";
+import { OrderPayload, OrderSide, OrderType } from "../../src/domain/orders";
 
 type TesterProps = {
   payload: OrderPayload;

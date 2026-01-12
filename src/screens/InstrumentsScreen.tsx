@@ -1,19 +1,25 @@
 import { useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { InstrumentRow } from "../components/InstrumentRow";
 import { OrderModal } from "../components/OrderModal";
+import { Instrument } from "../domain/instrument";
 import { useInstruments } from "../hooks/useInstruments";
+import { useSearch } from "../hooks/useSearch";
 import { calculateReturnPct } from "../lib/returns";
-import { Instrument } from "../services/api";
-import { colors, fonts, spacing } from "../theme";
+import { SearchResultRow } from "../components/SearchResultRow";
+import { colors, fonts, radii, spacing } from "../theme";
 
 export function InstrumentsScreen() {
-  const state = useInstruments();
+  const instruments = useInstruments();
+  const [query, setQuery] = useState("");
   const [selectedInstrument, setSelectedInstrument] = useState<Instrument | null>(null);
+  const searchState = useSearch(query);
+  const trimmedQuery = query.trim();
+  const searching = trimmedQuery.length >= 2;
 
-  const content = useMemo(() => {
-    if (state.loading) {
+  const instrumentsContent = useMemo(() => {
+    if (instruments.loading) {
       return (
         <View style={styles.center} testID="instruments-loading">
           <ActivityIndicator size="small" color={colors.accent} />
@@ -22,17 +28,17 @@ export function InstrumentsScreen() {
       );
     }
 
-    if (state.error) {
+    if (instruments.error) {
       return (
         <View style={styles.center} testID="instruments-error">
-          <Text style={styles.errorText}>{state.error}</Text>
+          <Text style={styles.errorText}>{instruments.error}</Text>
         </View>
       );
     }
 
     return (
       <FlatList
-        data={state.data}
+        data={instruments.data}
         keyExtractor={(item) => String(item.id ?? item.ticker)}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
@@ -47,7 +53,57 @@ export function InstrumentsScreen() {
         )}
       />
     );
-  }, [state.data, state.error, state.loading]);
+  }, [instruments.data, instruments.error, instruments.loading]);
+
+  const searchContent = useMemo(() => {
+    if (!searching) return null;
+
+    if (searchState.loading) {
+      return (
+        <View style={styles.center} testID="search-loading">
+          <ActivityIndicator size="small" color={colors.accent} />
+          <Text style={styles.helper}>Buscando instrumentos...</Text>
+        </View>
+      );
+    }
+
+    if (searchState.error) {
+      return (
+        <View style={styles.center} testID="search-error">
+          <Text style={styles.errorText}>{searchState.error}</Text>
+        </View>
+      );
+    }
+
+    if (!searchState.data.length) {
+      return (
+        <View style={styles.center} testID="search-empty">
+          <Text style={styles.helper}>No encontramos resultados.</Text>
+        </View>
+      );
+    }
+
+    return (
+      <FlatList
+        data={searchState.data}
+        keyExtractor={(item) => String(item.id ?? item.ticker)}
+        contentContainerStyle={styles.list}
+        renderItem={({ item }) => (
+          <SearchResultRow
+            ticker={item.ticker}
+            name={item.name}
+            type={item.type ?? ""}
+            lastPrice={item.last_price}
+            closePrice={item.close_price}
+            testID={`search-row-${item.ticker}`}
+            onPress={() => setSelectedInstrument(item)}
+          />
+        )}
+      />
+    );
+  }, [searchState.data, searchState.error, searchState.loading, searching]);
+
+  const content = searching ? searchContent : instrumentsContent;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -56,6 +112,25 @@ export function InstrumentsScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Instrumentos</Text>
           <Text style={styles.subtitle}>Ultimo precio y retorno</Text>
+        </View>
+        <View style={styles.searchBlock}>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              placeholder="Buscar por ticker (ej: AL30, MEP, CEDEAR...)"
+              placeholderTextColor={colors.textMuted}
+              style={styles.input}
+              value={query}
+              onChangeText={setQuery}
+              autoCapitalize="characters"
+              autoCorrect={false}
+              testID="search-input"
+            />
+          </View>
+          {!searching && (
+            <Text style={styles.helper} testID="search-idle">
+              Escribí al menos 2 letras para buscar por ticker.
+            </Text>
+          )}
         </View>
         {content}
       </View>
@@ -82,6 +157,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
     gap: spacing.lg
+  },
+  searchBlock: {
+    gap: spacing.xs
+  },
+  inputWrapper: {
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs
+  },
+  input: {
+    fontFamily: fonts.body,
+    color: colors.text,
+    fontSize: 16
   },
   header: {
     gap: spacing.xs

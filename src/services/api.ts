@@ -1,77 +1,27 @@
-export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL ?? "https://dummy-api-topaz.vercel.app";
+import { listInstruments, listPortfolio, searchInstruments, submitOrder } from "../application/useCases";
+import { API_BASE_URL } from "../infrastructure/http/httpClient";
+import { Instrument } from "../domain/instrument";
+import { PortfolioPosition } from "../domain/portfolio";
+import { OrderPayload, OrderResponse } from "../domain/orders";
+import { SearchResult } from "../domain/searchResult";
 
-export type Instrument = {
-  id: number;
-  ticker: string;
-  name: string;
-  last_price: number;
-  close_price: number;
-  type?: string;
-};
+export { API_BASE_URL };
 
-export type PortfolioItem = {
-  id: number;
-  ticker: string;
-  name: string;
-  quantity: number;
-  last_price: number;
-  avg_cost_price: number;
-};
-
-export async function fetchInstruments(signal?: AbortSignal) {
-  const response = await fetch(`${API_BASE_URL}/instruments`, { signal });
-  if (!response.ok) {
-    throw new Error(`Failed to fetch instruments (${response.status})`);
-  }
-  const data = await response.json();
-  return data as Instrument[];
+export async function fetchInstruments(signal?: AbortSignal): Promise<Instrument[]> {
+  return listInstruments({ signal });
 }
 
-export async function fetchPortfolio(signal?: AbortSignal) {
-  const response = await fetch(`${API_BASE_URL}/portfolio`, { signal });
-  if (!response.ok) {
-    throw new Error(`Failed to fetch portfolio (${response.status})`);
-  }
-  const data = await response.json();
-  return data as PortfolioItem[];
+export async function fetchPortfolio(signal?: AbortSignal): Promise<PortfolioPosition[]> {
+  return listPortfolio({ signal });
 }
 
-export type SearchResult = {
-  id: number;
-  ticker: string;
-  name: string;
-  type: string;
-  last_price: number;
-  close_price: number;
-};
-
-export async function fetchSearch(query: string, signal?: AbortSignal) {
-  const response = await fetch(
-    `${API_BASE_URL}/search?query=${encodeURIComponent(query)}`,
-    { signal }
-  );
-  if (!response.ok) {
-    throw new Error(`Failed to search instruments (${response.status})`);
-  }
-  const data = await response.json();
-  return data as SearchResult[];
+export async function fetchSearch(query: string, signal?: AbortSignal): Promise<SearchResult[]> {
+  return searchInstruments(query, { signal });
 }
 
-import { OrderPayload, OrderResponse } from "../types/orders";
-
-export async function placeOrder(payload: OrderPayload, signal?: AbortSignal) {
-  const response = await fetch(`${API_BASE_URL}/orders`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-    signal
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to place order (${response.status})`);
-  }
-
-  const data = await response.json();
-  return data as OrderResponse;
+export async function placeOrder(
+  payload: OrderPayload,
+  signal?: AbortSignal
+): Promise<OrderResponse> {
+  return submitOrder(payload, { signal });
 }

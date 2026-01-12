@@ -1,11 +1,16 @@
 const mockUseSearch = jest.fn();
+const mockUseInstruments = jest.fn();
 
 jest.mock("../src/hooks/useSearch", () => ({
   useSearch: (query: string) => mockUseSearch(query)
 }));
 
+jest.mock("../src/hooks/useInstruments", () => ({
+  useInstruments: () => mockUseInstruments()
+}));
+
 import { fireEvent, render } from "@testing-library/react-native";
-import { SearchScreen } from "../src/screens/SearchScreen";
+import { InstrumentsScreen } from "../src/screens/InstrumentsScreen";
 
 const sampleResults = [
   {
@@ -20,6 +25,12 @@ const sampleResults = [
 
 describe("SearchScreen", () => {
   beforeEach(() => {
+    mockUseInstruments.mockReturnValue({
+      loading: false,
+      error: null,
+      data: []
+    });
+
     mockUseSearch.mockImplementation((query: string) => {
       if (query.length >= 2) {
         return { loading: false, error: null, data: sampleResults };
@@ -30,17 +41,18 @@ describe("SearchScreen", () => {
 
   afterEach(() => {
     mockUseSearch.mockReset();
+    mockUseInstruments.mockReset();
   });
 
   it("shows idle helper before typing", () => {
-    const { getByTestId, getByText } = render(<SearchScreen />);
+    const { getByTestId, getByText } = render(<InstrumentsScreen />);
 
     expect(getByTestId("search-idle")).toBeTruthy();
-    expect(getByText("Buscá por ticker para ver resultados.")).toBeTruthy();
+    expect(getByText("Escribí al menos 2 letras para buscar por ticker.")).toBeTruthy();
   });
 
   it("renders results after entering a query", () => {
-    const { getByTestId, getByText } = render(<SearchScreen />);
+    const { getByTestId, getByText } = render(<InstrumentsScreen />);
 
     fireEvent.changeText(getByTestId("search-input"), "AL30");
 
@@ -55,7 +67,7 @@ describe("SearchScreen", () => {
       data: []
     }));
 
-    const { getByTestId, getByText } = render(<SearchScreen />);
+    const { getByTestId, getByText } = render(<InstrumentsScreen />);
 
     fireEvent.changeText(getByTestId("search-input"), "MEP");
 

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { fetchPortfolio, PortfolioItem } from "../services/api";
+import { listPortfolio } from "../application/useCases";
+import { defaultPorts } from "../application/container";
+import { PortfolioPosition } from "../domain/portfolio";
 
 type PortfolioState = {
   loading: boolean;
   error: string | null;
-  data: PortfolioItem[];
+  data: PortfolioPosition[];
 };
 
 export function usePortfolio() {
@@ -16,7 +18,7 @@ export function usePortfolio() {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchPortfolio(controller.signal)
+    listPortfolio({ signal: controller.signal, ports: defaultPorts })
       .then((data) => {
         setState({ loading: false, error: null, data });
       })

@@ -1,7 +1,12 @@
 const mockUseInstruments = jest.fn();
+const mockUseSearch = jest.fn();
 
 jest.mock("../src/hooks/useInstruments", () => ({
   useInstruments: () => mockUseInstruments()
+}));
+
+jest.mock("../src/hooks/useSearch", () => ({
+  useSearch: () => mockUseSearch()
 }));
 
 import { render } from "@testing-library/react-native";
@@ -25,6 +30,12 @@ const sampleInstruments = [
 
 describe("InstrumentsScreen", () => {
   beforeEach(() => {
+    mockUseSearch.mockReturnValue({
+      loading: false,
+      error: null,
+      data: []
+    });
+
     mockUseInstruments.mockReturnValue({
       loading: false,
       error: null,
@@ -34,6 +45,7 @@ describe("InstrumentsScreen", () => {
 
   afterEach(() => {
     mockUseInstruments.mockReset();
+    mockUseSearch.mockReset();
   });
 
   it("loads and renders instruments", async () => {

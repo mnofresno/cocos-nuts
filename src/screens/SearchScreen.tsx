@@ -52,7 +52,7 @@ export function SearchScreen() {
           <SearchResultRow
             ticker={item.ticker}
             name={item.name}
-            type={item.type}
+            type={item.type ?? ""}
             lastPrice={item.last_price}
             closePrice={item.close_price}
             testID={`search-row-${item.ticker}`}

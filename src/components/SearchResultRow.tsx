@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formatCurrency } from "../lib/format";
 import { calculateReturnPct } from "../lib/returns";
 import { colors, fonts, radii, spacing } from "../theme";
@@ -11,6 +11,7 @@ type SearchResultRowProps = {
   lastPrice: number;
   closePrice: number;
   testID?: string;
+  onPress?: () => void;
 };
 
 export function SearchResultRow({
@@ -19,10 +20,16 @@ export function SearchResultRow({
   type,
   lastPrice,
   closePrice,
-  testID
+  testID,
+  onPress
 }: SearchResultRowProps) {
   return (
-    <View style={styles.card} testID={testID}>
+    <Pressable
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      testID={testID}
+      onPress={onPress}
+      accessibilityRole="button"
+    >
       <View style={styles.header}>
         <View>
           <Text style={styles.ticker}>{ticker}</Text>
@@ -39,7 +46,7 @@ export function SearchResultRow({
           <Text style={styles.price}>{formatCurrency(lastPrice)}</Text>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -49,6 +56,9 @@ const styles = StyleSheet.create({
     borderRadius: radii.md,
     padding: spacing.md,
     gap: spacing.md
+  },
+  cardPressed: {
+    backgroundColor: colors.surfaceAlt
   },
   header: {
     flexDirection: "row",

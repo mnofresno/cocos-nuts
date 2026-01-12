@@ -53,9 +53,6 @@ describe("Search flow (e2e)", () => {
   it("allows searching instruments from the app entry", async () => {
     const { getByTestId, getByText } = render(<App />);
 
-    // Switch to search tab
-    fireEvent.press(getByTestId("tab-search"));
-
     const input = getByTestId("search-input");
     fireEvent.changeText(input, "AL30");
 
@@ -64,5 +61,22 @@ describe("Search flow (e2e)", () => {
     });
 
     expect(getByText("Bonos AL30")).toBeTruthy();
+  });
+
+  it("opens the order modal from a search result", async () => {
+    const { getByTestId } = render(<App />);
+
+    const input = getByTestId("search-input");
+    fireEvent.changeText(input, "AL30");
+
+    await waitFor(() => {
+      expect(getByTestId("search-row-AL30")).toBeTruthy();
+    });
+
+    fireEvent.press(getByTestId("search-row-AL30"));
+
+    await waitFor(() => {
+      expect(getByTestId("order-modal")).toBeTruthy();
+    });
   });
 });

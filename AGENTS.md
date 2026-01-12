@@ -1,38 +1,28 @@
 # Instrucciones para Codex
 
-## Objetivo del proyecto
-Desarrollar la app de challenge en React Native + TypeScript según `challenge-definition.md`, priorizando calidad de producción.
+## Objetivo
+Desarrollar la app del challenge en React Native + TypeScript siguiendo `challenge-definition.md`, con calidad de producción.
 
 ## Flujo de trabajo
-- Mantener `status.md` actualizado con las tareas del challenge y pedidos del usuario.
-- Agregar nuevos pedidos del usuario como tareas con casilleros de check.
-- Marcar como completadas solo las tareas finalizadas.
-- Mantener decisiones técnicas claras en `README.md`.
+- Mantener `status.md` sincronizado con tareas del challenge y pedidos del usuario; agregar nuevos pedidos como tareas con casilleros y marcar solo lo finalizado.
+- Mantener decisiones técnicas y cómo correr el proyecto en `README.md`.
 
-## Estado de tareas (duplicado intencional de `status.md`)
-- [x] Scaffold react native project structure
-- [x] Basic CI to run tests
-- [x] CI: linter TypeScript y React
-- [x] CI: workflows separados (tests, lint, build, typecheck)
-- [x] README: badges por workflow (tests, lint, build, typecheck)
-- [x] CI: versionado automatico de la app
-- [x] CI: release APK Android en GitHub Releases
-- [x] API base URL configurable via variable de entorno para releases
-- [x] Pantalla /instruments: listar ticker, nombre, ultimo precio y retorno (ultimo precio vs cierre)
-- [x] Fix Jest setup failing on missing extend-expect import
-- [x] Pantalla /portfolio: listar ticker, cantidad, valor de mercado, ganancia y rendimiento total (usar avg_cost_price)
-- [x] Pantalla /search: buscador por ticker
-- [x] Tests: pantalla /search (componentes, hooks, e2e)
-- [ ] Ordenes: modal con formulario (BUY/SELL, MARKET/LIMIT, cantidad, precio solo para LIMIT) y POST /orders
-- [ ] Ordenes: mostrar id y status devuelto (PENDING, REJECTED, FILLED)
-- [ ] Ordenes: validar reglas de estado segun tipo (LIMIT -> PENDING/REJECTED, MARKET -> REJECTED/FILLED)
-- [ ] Ordenes: permitir cantidad exacta o monto en pesos (calcular cantidad max sin fracciones con ultimo precio)
-- [x] Precios mostrados en pesos
-- [x] Calculos portfolio: valor de mercado = quantity * last_price; ganancia y rendimiento usando avg_cost_price
-- [ ] README.md: instrucciones de instalacion/ejecucion y decisiones tecnicas
-- [ ] Arquitectura: estructura mantenible y escalable
-- [ ] Manejo de errores robusto
-- [ ] State management adecuado
-- [x] Tests: portfolio screen y métricas
-- [x] Stabilize portfolio screen test by mocking API service
-- [x] Unit tests si aplica
+## Arquitectura y patrones
+- Arquitectura hexagonal ligera:
+  - Dominio en `src/domain` (órdenes, instrumentos, portfolio, errores, resultados de búsqueda).
+  - Puertos en `src/ports.ts`.
+  - Casos de uso en `src/application/useCases.ts` + `src/application/container.ts`.
+  - Adaptadores HTTP en `src/infrastructure/http/httpClient.ts` (configurable por `EXPO_PUBLIC_API_BASE_URL`).
+  - UI (screens/components) consume casos de uso vía hooks en `src/hooks`.
+- Código y nombres en inglés; textos visibles al usuario en español.
+- Manejo de errores: `HttpError` y `DomainError`; los hooks muestran mensajes de usuario en español y no silencian errores de programación.
+- State management: estado local en hooks de vista; requests abortables; se puede reemplazar puertos por dobles para tests.
+
+## Testing
+- Preferir `npm test` con cobertura. Mockear `fetch` en e2e unitarios; usar abort controllers para evitar warnings.
+- No dejar fallas de act(); envolver actualizaciones async en `waitFor` o `act` cuando corresponda.
+
+## Otras notas
+- No revertir cambios existentes del usuario.
+- Respetar el idioma y mantener precios en pesos.
+- UI debe cumplir con /instruments, /portfolio, /search y órdenes (BUY/SELL, MARKET/LIMIT, monto en pesos, reglas de estado, mostrar id/status).

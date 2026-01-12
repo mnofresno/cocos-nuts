@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import { useSubmitOrder } from "../hooks/useSubmitOrder";
 import { formatCurrency } from "../lib/format";
-import { Instrument } from "../services/api";
-import { OrderSide, OrderType } from "../types/orders";
+import { Instrument } from "../domain/instrument";
+import { OrderSide, OrderType } from "../domain/orders";
 import { colors, fonts, radii, spacing } from "../theme";
 
 type OrderModalProps = {
@@ -68,7 +68,7 @@ export function OrderModal({ instrument, onClose }: OrderModalProps) {
     try {
       await submit({
         instrument_id: instrument.id,
-    side,
+        side,
         type,
         quantity: computedQuantity,
         ...(type === OrderType.LIMIT ? { price: priceValue } : {})
@@ -184,7 +184,7 @@ export function OrderModal({ instrument, onClose }: OrderModalProps) {
           )}
         </View>
 
-        {type === "LIMIT" ? (
+        {type === OrderType.LIMIT ? (
           <View style={styles.group}>
             <Text style={styles.label}>Precio límite</Text>
             <TextInput

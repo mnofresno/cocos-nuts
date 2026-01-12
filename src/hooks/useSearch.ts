@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { fetchSearch, SearchResult } from "../services/api";
+import { searchInstruments } from "../application/useCases";
+import { defaultPorts } from "../application/container";
+import { Instrument } from "../domain/instrument";
 
 type SearchState = {
   loading: boolean;
   error: string | null;
-  data: SearchResult[];
+  data: Instrument[];
 };
 
 export function useSearch(query: string) {
@@ -23,7 +25,10 @@ export function useSearch(query: string) {
       setState({ loading: true, error: null, data: [] });
 
       try {
-        const data = await fetchSearch(trimmed, controller.signal);
+        const data = await searchInstruments(trimmed, {
+          signal: controller.signal,
+          ports: defaultPorts
+        });
         setState({ loading: false, error: null, data });
       } catch (error) {
         if ((error as Error | undefined)?.name === "AbortError") return;

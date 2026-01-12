@@ -17,10 +17,15 @@
 - [x] Ordenes: permitir cantidad exacta o monto en pesos (calcular cantidad max sin fracciones con ultimo precio)
 - [x] Precios mostrados en pesos
 - [x] Calculos portfolio: valor de mercado = quantity * last_price; ganancia y rendimiento usando avg_cost_price
-- [ ] README.md: instrucciones de instalacion/ejecucion y decisiones tecnicas
-- [ ] Arquitectura: estructura mantenible y escalable
-- [ ] Manejo de errores robusto
-- [ ] State management adecuado
+- [x] README.md: instrucciones de instalacion/ejecucion y decisiones tecnicas
+- [x] Arquitectura: estructura mantenible y escalable
+- [x] Manejo de errores robusto
+- [x] State management adecuado
 - [x] Tests: portfolio screen y métricas
 - [x] Stabilize portfolio screen test by mocking API service
 - [x] Unit tests si aplica
+- [x] Código en inglés (UI en español)
+- [x] Revisión de coverage de tests
+- [x] Verificación de funcionalidades vs challenge-definition.md
+- [x] Integrar buscador dentro de la tab de instrumentos
+- [x] Ajustar tabs para respetar el safe area y no cortarlos en pantalla
