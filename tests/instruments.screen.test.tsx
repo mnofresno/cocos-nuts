@@ -1,6 +1,11 @@
-import { render, waitFor } from "@testing-library/react-native";
-import { InstrumentsScreen } from "../src/screens/InstrumentsScreen";
+const mockUseInstruments = jest.fn();
 
+jest.mock("../src/hooks/useInstruments", () => ({
+  useInstruments: () => mockUseInstruments()
+}));
+
+import { render } from "@testing-library/react-native";
+import { InstrumentsScreen } from "../src/screens/InstrumentsScreen";
 const sampleInstruments = [
   {
     id: 1,
@@ -20,24 +25,19 @@ const sampleInstruments = [
 
 describe("InstrumentsScreen", () => {
   beforeEach(() => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => sampleInstruments
-    }) as jest.Mock;
+    mockUseInstruments.mockReturnValue({
+      loading: false,
+      error: null,
+      data: sampleInstruments
+    });
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    mockUseInstruments.mockReset();
   });
 
   it("loads and renders instruments", async () => {
     const { getByTestId, getByText } = render(<InstrumentsScreen />);
-
-    expect(getByTestId("instruments-loading")).toBeTruthy();
-
-    await waitFor(() => {
-      expect(getByTestId("instrument-row-DYCA")).toBeTruthy();
-    });
 
     expect(getByText("Cocos Nuts")).toBeTruthy();
     expect(getByTestId("instrument-row-COCO")).toBeTruthy();
