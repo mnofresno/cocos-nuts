@@ -2,6 +2,11 @@ name: Lint
 
 on:
   push:
+    branches:
+      - "*"
+    tags-ignore:
+      - "v*"
+  workflow_call:
 
 jobs:
   lint:
