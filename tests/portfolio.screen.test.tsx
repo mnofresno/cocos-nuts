@@ -1,5 +1,11 @@
-import { render, waitFor } from "@testing-library/react-native";
+import { render } from "@testing-library/react-native";
 import { PortfolioScreen } from "../src/screens/PortfolioScreen";
+
+const mockUsePortfolio = jest.fn();
+
+jest.mock("../src/hooks/usePortfolio", () => ({
+  usePortfolio: () => mockUsePortfolio()
+}));
 
 const samplePortfolio = [
   {
@@ -21,40 +27,40 @@ const samplePortfolio = [
 ];
 
 describe("PortfolioScreen", () => {
-  afterEach(() => {
-    jest.resetAllMocks();
+  beforeEach(() => {
+    mockUsePortfolio.mockReturnValue({
+      loading: false,
+      error: null,
+      data: samplePortfolio
+    });
   });
 
-  it("loads and renders portfolio positions", async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => samplePortfolio
-    }) as jest.Mock;
+  afterEach(() => {
+    mockUsePortfolio.mockReset();
+  });
 
-    const { getByTestId, getByText } = render(<PortfolioScreen />);
+  it("loads and renders portfolio positions", () => {
+    const { getByTestId, getByText, queryByTestId } = render(
+      <PortfolioScreen />
+    );
 
-    expect(getByTestId("portfolio-loading")).toBeTruthy();
+    expect(queryByTestId("portfolio-loading")).toBeNull();
 
-    await waitFor(() => {
-      expect(getByTestId("portfolio-row-AL30")).toBeTruthy();
-    });
-
+    expect(getByTestId("portfolio-row-AL30")).toBeTruthy();
     expect(getByText("Dyca SA")).toBeTruthy();
     expect(getByTestId("portfolio-row-DYCA")).toBeTruthy();
   });
 
-  it("shows the error state when the request fails", async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: false,
-      status: 500
-    }) as jest.Mock;
+  it("shows the error state when the request fails", () => {
+    mockUsePortfolio.mockReturnValue({
+      loading: false,
+      error: "No se pudo cargar portfolio.",
+      data: []
+    });
 
     const { getByTestId, getByText } = render(<PortfolioScreen />);
 
-    await waitFor(() => {
-      expect(getByTestId("portfolio-error")).toBeTruthy();
-    });
-
+    expect(getByTestId("portfolio-error")).toBeTruthy();
     expect(getByText("No se pudo cargar portfolio.")).toBeTruthy();
   });
 });
