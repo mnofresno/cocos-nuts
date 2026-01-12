@@ -7,6 +7,7 @@ export type Instrument = {
   name: string;
   last_price: number;
   close_price: number;
+  type?: string;
 };
 
 export type PortfolioItem = {
@@ -34,4 +35,25 @@ export async function fetchPortfolio(signal?: AbortSignal) {
   }
   const data = await response.json();
   return data as PortfolioItem[];
+}
+
+export type SearchResult = {
+  id: number;
+  ticker: string;
+  name: string;
+  type: string;
+  last_price: number;
+  close_price: number;
+};
+
+export async function fetchSearch(query: string, signal?: AbortSignal) {
+  const response = await fetch(
+    `${API_BASE_URL}/search?query=${encodeURIComponent(query)}`,
+    { signal }
+  );
+  if (!response.ok) {
+    throw new Error(`Failed to search instruments (${response.status})`);
+  }
+  const data = await response.json();
+  return data as SearchResult[];
 }

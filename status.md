@@ -9,7 +9,8 @@
 - [x] Pantalla /instruments: listar ticker, nombre, ultimo precio y retorno (ultimo precio vs cierre)
 - [x] Fix Jest setup failing on missing extend-expect import
 - [x] Pantalla /portfolio: listar ticker, cantidad, valor de mercado, ganancia y rendimiento total (usar avg_cost_price)
-- [ ] Pantalla /search: buscador por ticker
+- [x] Pantalla /search: buscador por ticker
+- [x] Tests: pantalla /search (componentes, hooks, e2e)
 - [ ] Ordenes: modal con formulario (BUY/SELL, MARKET/LIMIT, cantidad, precio solo para LIMIT) y POST /orders
 - [ ] Ordenes: mostrar id y status devuelto (PENDING, REJECTED, FILLED)
 - [ ] Ordenes: validar reglas de estado segun tipo (LIMIT -> PENDING/REJECTED, MARKET -> REJECTED/FILLED)
