@@ -11,10 +11,10 @@
 - [x] Pantalla /portfolio: listar ticker, cantidad, valor de mercado, ganancia y rendimiento total (usar avg_cost_price)
 - [x] Pantalla /search: buscador por ticker
 - [x] Tests: pantalla /search (componentes, hooks, e2e)
-- [ ] Ordenes: modal con formulario (BUY/SELL, MARKET/LIMIT, cantidad, precio solo para LIMIT) y POST /orders
-- [ ] Ordenes: mostrar id y status devuelto (PENDING, REJECTED, FILLED)
-- [ ] Ordenes: validar reglas de estado segun tipo (LIMIT -> PENDING/REJECTED, MARKET -> REJECTED/FILLED)
-- [ ] Ordenes: permitir cantidad exacta o monto en pesos (calcular cantidad max sin fracciones con ultimo precio)
+- [x] Ordenes: modal con formulario (BUY/SELL, MARKET/LIMIT, cantidad, precio solo para LIMIT) y POST /orders
+- [x] Ordenes: mostrar id y status devuelto (PENDING, REJECTED, FILLED)
+- [x] Ordenes: validar reglas de estado segun tipo (LIMIT -> PENDING/REJECTED, MARKET -> REJECTED/FILLED)
+- [x] Ordenes: permitir cantidad exacta o monto en pesos (calcular cantidad max sin fracciones con ultimo precio)
 - [x] Precios mostrados en pesos
 - [x] Calculos portfolio: valor de mercado = quantity * last_price; ganancia y rendimiento usando avg_cost_price
 - [ ] README.md: instrucciones de instalacion/ejecucion y decisiones tecnicas

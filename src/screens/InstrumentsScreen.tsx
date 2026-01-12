@@ -1,13 +1,16 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { InstrumentRow } from "../components/InstrumentRow";
+import { OrderModal } from "../components/OrderModal";
 import { useInstruments } from "../hooks/useInstruments";
 import { calculateReturnPct } from "../lib/returns";
+import { Instrument } from "../services/api";
 import { colors, fonts, spacing } from "../theme";
 
 export function InstrumentsScreen() {
   const state = useInstruments();
+  const [selectedInstrument, setSelectedInstrument] = useState<Instrument | null>(null);
 
   const content = useMemo(() => {
     if (state.loading) {
@@ -39,6 +42,7 @@ export function InstrumentsScreen() {
             lastPrice={item.last_price}
             returnPct={calculateReturnPct(item.last_price, item.close_price)}
             testID={`instrument-row-${item.ticker}`}
+            onPress={() => setSelectedInstrument(item)}
           />
         )}
       />
@@ -55,6 +59,11 @@ export function InstrumentsScreen() {
         </View>
         {content}
       </View>
+      <OrderModal
+        key={selectedInstrument?.id ?? "none"}
+        instrument={selectedInstrument}
+        onClose={() => setSelectedInstrument(null)}
+      />
     </SafeAreaView>
   );
 }

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { colors, fonts, radii, spacing } from "../theme";
 import { formatCurrency } from "../lib/format";
 import { ReturnPill } from "./ReturnPill";
@@ -9,6 +9,7 @@ type InstrumentRowProps = {
   lastPrice: number;
   returnPct: number;
   testID?: string;
+  onPress?: () => void;
 };
 
 export function InstrumentRow({
@@ -16,10 +17,11 @@ export function InstrumentRow({
   name,
   lastPrice,
   returnPct,
-  testID
+  testID,
+  onPress
 }: InstrumentRowProps) {
   return (
-    <View style={styles.card} testID={testID}>
+    <Pressable style={styles.card} testID={testID} onPress={onPress} accessibilityRole="button">
       <View style={styles.header}>
         <View>
           <Text style={styles.ticker}>{ticker}</Text>
@@ -31,7 +33,7 @@ export function InstrumentRow({
         <Text style={styles.label}>Ultimo precio</Text>
         <Text style={styles.price}>{formatCurrency(lastPrice)}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
