@@ -1,12 +1,6 @@
 import { useMemo } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, fonts, spacing } from "../theme";
 import { InstrumentRow } from "../components/InstrumentRow";
 import { useInstruments } from "../hooks/useInstruments";
