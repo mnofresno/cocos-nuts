@@ -32,3 +32,4 @@ Desarrollar la app de challenge en React Native + TypeScript según `challenge-d
 - [ ] Manejo de errores robusto
 - [ ] State management adecuado
 - [ ] Unit tests si aplica
+- [x] Stabilize portfolio screen test by mocking API service
