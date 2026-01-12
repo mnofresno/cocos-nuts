@@ -38,3 +38,5 @@ npm test
 - Base mínima con tema en `src/theme`.
 - Hooks dedicados (`useInstruments`, `usePortfolio`) para separar data fetching del render.
 - Cálculos de portfolio centralizados en `src/lib/portfolio.ts` para testear métricas clave.
+- Buscador `/search` con hook `useSearch` (mínimo 2 caracteres, manejo de loading/error/empty) y `SearchResultRow` reutilizando `calculateReturnPct`.
+- Tests unitarios y E2E cubriendo pantalla de búsqueda, componentes y hooks (además de instrumentos/portfolio).

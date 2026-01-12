@@ -3,9 +3,10 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { InstrumentsScreen } from "./src/screens/InstrumentsScreen";
 import { PortfolioScreen } from "./src/screens/PortfolioScreen";
+import { SearchScreen } from "./src/screens/SearchScreen";
 import { colors, fonts, radii, spacing } from "./src/theme";
 
-type TabKey = "instruments" | "portfolio";
+type TabKey = "instruments" | "portfolio" | "search";
 
 export default function App() {
   const [tab, setTab] = useState<TabKey>("instruments");
@@ -31,8 +32,18 @@ export default function App() {
           >
             <Text style={styles.tabText}>Portfolio</Text>
           </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setTab("search")}
+            style={[styles.tab, tab === "search" && styles.tabActive]}
+            testID="tab-search"
+          >
+            <Text style={styles.tabText}>Buscar</Text>
+          </Pressable>
         </View>
-        {tab === "instruments" ? <InstrumentsScreen /> : <PortfolioScreen />}
+        {tab === "instruments" && <InstrumentsScreen />}
+        {tab === "portfolio" && <PortfolioScreen />}
+        {tab === "search" && <SearchScreen />}
       </View>
     </>
   );
