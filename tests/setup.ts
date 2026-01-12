@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable react/prop-types */
 
 jest.mock("react-native-safe-area-context", () => {
   const React = require("react") as typeof import("react");

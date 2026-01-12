@@ -57,3 +57,21 @@ export async function fetchSearch(query: string, signal?: AbortSignal) {
   const data = await response.json();
   return data as SearchResult[];
 }
+
+import { OrderPayload, OrderResponse } from "../types/orders";
+
+export async function placeOrder(payload: OrderPayload, signal?: AbortSignal) {
+  const response = await fetch(`${API_BASE_URL}/orders`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    signal
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to place order (${response.status})`);
+  }
+
+  const data = await response.json();
+  return data as OrderResponse;
+}
