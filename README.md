@@ -36,3 +36,5 @@ npm test
 
 ## Decisiones técnicas
 - Base mínima con tema en `src/theme`.
+- Hooks dedicados (`useInstruments`, `usePortfolio`) para separar data fetching del render.
+- Cálculos de portfolio centralizados en `src/lib/portfolio.ts` para testear métricas clave.
