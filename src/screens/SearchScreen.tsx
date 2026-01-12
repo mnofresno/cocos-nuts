@@ -1,13 +1,6 @@
 import { useMemo, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
-} from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { SearchResultRow } from "../components/SearchResultRow";
 import { useSearch } from "../hooks/useSearch";
 import { colors, fonts, radii, spacing } from "../theme";

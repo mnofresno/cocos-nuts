@@ -1,4 +1,4 @@
-import { render, waitFor } from "@testing-library/react-native";
+import { render, RenderAPI, waitFor } from "@testing-library/react-native";
 import { Text } from "react-native";
 import { useSearch } from "../../src/hooks/useSearch";
 
@@ -7,7 +7,7 @@ function HookTester({ query }: { query: string }) {
   return <Text testID="state">{JSON.stringify(state)}</Text>;
 }
 
-function readState(getByTestId: (id: string) => any) {
+function readState(getByTestId: RenderAPI["getByTestId"]) {
   return JSON.parse(getByTestId("state").props.children as string) as ReturnType<
     typeof useSearch
   >;

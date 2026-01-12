@@ -8,6 +8,7 @@ type SearchState = {
 };
 
 export function useSearch(query: string) {
+  const trimmed = query.trim();
   const [state, setState] = useState<SearchState>({
     loading: false,
     error: null,
@@ -15,31 +16,33 @@ export function useSearch(query: string) {
   });
 
   useEffect(() => {
-    const trimmed = query.trim();
-
-    if (trimmed.length < 2) {
-      setState({ loading: false, error: null, data: [] });
-      return;
-    }
+    if (trimmed.length < 2) return;
 
     const controller = new AbortController();
-    setState({ loading: true, error: null, data: [] });
+    const run = async () => {
+      setState({ loading: true, error: null, data: [] });
 
-    fetchSearch(trimmed, controller.signal)
-      .then((data) => {
+      try {
+        const data = await fetchSearch(trimmed, controller.signal);
         setState({ loading: false, error: null, data });
-      })
-      .catch((error) => {
-        if (error?.name === "AbortError") return;
+      } catch (error) {
+        if ((error as Error | undefined)?.name === "AbortError") return;
         setState({
           loading: false,
           error: "No se pudo buscar instrumentos.",
           data: []
         });
-      });
+      }
+    };
+
+    void run();
 
     return () => controller.abort();
-  }, [query]);
+  }, [trimmed]);
+
+  if (trimmed.length < 2) {
+    return { loading: false, error: null, data: [] };
+  }
 
   return state;
 }

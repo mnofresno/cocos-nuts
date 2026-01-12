@@ -1,6 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { SafeAreaProvider, initialWindowMetrics } from "react-native-safe-area-context";
 import { InstrumentsScreen } from "./src/screens/InstrumentsScreen";
 import { PortfolioScreen } from "./src/screens/PortfolioScreen";
 import { SearchScreen } from "./src/screens/SearchScreen";
@@ -12,7 +13,7 @@ export default function App() {
   const [tab, setTab] = useState<TabKey>("instruments");
 
   return (
-    <>
+    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <StatusBar style="light" />
       <View style={styles.app}>
         <View style={styles.tabs}>
@@ -45,7 +46,7 @@ export default function App() {
         {tab === "portfolio" && <PortfolioScreen />}
         {tab === "search" && <SearchScreen />}
       </View>
-    </>
+    </SafeAreaProvider>
   );
 }
 
