@@ -12,6 +12,8 @@ type InstrumentRowProps = {
   onPress?: () => void;
 };
 
+import { MaterialIcons } from "@expo/vector-icons";
+
 export function InstrumentRow({
   ticker,
   name,
@@ -21,17 +23,27 @@ export function InstrumentRow({
   onPress
 }: InstrumentRowProps) {
   return (
-    <Pressable style={styles.card} testID={testID} onPress={onPress} accessibilityRole="button">
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.ticker}>{ticker}</Text>
-          <Text style={styles.name}>{name}</Text>
+    <Pressable
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      testID={testID}
+      onPress={onPress}
+      accessibilityRole="button"
+    >
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.ticker}>{ticker}</Text>
+            <Text style={styles.name}>{name}</Text>
+          </View>
+          <ReturnPill value={returnPct} />
         </View>
-        <ReturnPill value={returnPct} />
+        <View style={styles.footer}>
+          <Text style={styles.label}>Ultimo precio</Text>
+          <Text style={styles.price}>{formatCurrency(lastPrice)}</Text>
+        </View>
       </View>
-      <View style={styles.footer}>
-        <Text style={styles.label}>Ultimo precio</Text>
-        <Text style={styles.price}>{formatCurrency(lastPrice)}</Text>
+      <View style={styles.chevron}>
+        <MaterialIcons name="chevron-right" size={24} color={colors.textMuted} />
       </View>
     </Pressable>
   );
@@ -42,7 +54,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radii.md,
     padding: spacing.md,
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm
+  },
+  cardPressed: {
+    opacity: 0.7
+  },
+  content: {
+    flex: 1,
+    gap: spacing.sm
+  },
+  chevron: {
+    paddingLeft: spacing.xs
   },
   header: {
     flexDirection: "row",
