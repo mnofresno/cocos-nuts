@@ -57,7 +57,7 @@ describe("Orders flow (e2e)", () => {
     fireEvent.press(getByTestId("order-submit-button"));
 
     await waitFor(() => {
-      expect(getByTestId("order-result")).toBeTruthy();
+      expect(getByTestId("toast-message")).toBeTruthy();
     });
 
     expect(lastOrderBody?.quantity).toBe(2);

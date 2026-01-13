@@ -11,6 +11,11 @@ jest.mock("../src/hooks/useInstruments", () => ({
 
 import { fireEvent, render } from "@testing-library/react-native";
 import { InstrumentsScreen } from "../src/screens/InstrumentsScreen";
+import { ToastProvider } from "../src/components/Toast";
+
+const renderWithToast = (component: React.ReactNode) => {
+  return render(<ToastProvider>{component}</ToastProvider>);
+};
 
 const sampleResults = [
   {
@@ -45,14 +50,14 @@ describe("SearchScreen", () => {
   });
 
   it("shows idle helper before typing", () => {
-    const { getByTestId, getByText } = render(<InstrumentsScreen />);
+    const { getByTestId, getByText } = renderWithToast(<InstrumentsScreen />);
 
     expect(getByTestId("search-idle")).toBeTruthy();
     expect(getByText("Escribí al menos 2 letras para buscar por ticker.")).toBeTruthy();
   });
 
   it("renders results after entering a query", () => {
-    const { getByTestId, getByText } = render(<InstrumentsScreen />);
+    const { getByTestId, getByText } = renderWithToast(<InstrumentsScreen />);
 
     fireEvent.changeText(getByTestId("search-input"), "AL30");
 
@@ -67,7 +72,7 @@ describe("SearchScreen", () => {
       data: []
     }));
 
-    const { getByTestId, getByText } = render(<InstrumentsScreen />);
+    const { getByTestId, getByText } = renderWithToast(<InstrumentsScreen />);
 
     fireEvent.changeText(getByTestId("search-input"), "MEP");
 

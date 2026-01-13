@@ -1,5 +1,6 @@
 import { fireEvent, render, waitFor } from "@testing-library/react-native";
 import { OrderModal } from "../../src/components/OrderModal";
+import { ToastProvider } from "../../src/components/Toast";
 
 const instrument = {
   id: 1,
@@ -9,14 +10,18 @@ const instrument = {
   close_price: 95
 };
 
+const renderWithToast = (component: React.ReactNode) => {
+  return render(<ToastProvider>{component}</ToastProvider>);
+};
+
 describe("OrderModal", () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
   it("shows the limit price field when selecting LIMIT", () => {
-    const { queryByTestId, getByTestId } = render(
-      <OrderModal instrument={instrument} onClose={() => {}} />
+    const { queryByTestId, getByTestId } = renderWithToast(
+      <OrderModal instrument={instrument} onClose={() => { }} />
     );
 
     expect(queryByTestId("order-price-input")).toBeNull();
@@ -26,8 +31,8 @@ describe("OrderModal", () => {
   });
 
   it("calculates quantity from amount mode", () => {
-    const { getByTestId, getByText } = render(
-      <OrderModal instrument={instrument} onClose={() => {}} />
+    const { getByTestId, getByText } = renderWithToast(
+      <OrderModal instrument={instrument} onClose={() => { }} />
     );
 
     fireEvent.press(getByTestId("order-mode-amount"));
@@ -36,19 +41,25 @@ describe("OrderModal", () => {
     expect(getByText(/Enviaremos 2 acciones/)).toBeTruthy();
   });
 
-  it("sends an order and shows returned id/status", async () => {
+  it("sends an order, triggers Toast and calls onClose", async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
       json: async () => ({ id: 55, status: "FILLED" })
     }) as jest.Mock;
 
-    const { getByTestId } = render(<OrderModal instrument={instrument} onClose={() => {}} />);
+    const onCloseMock = jest.fn();
+    const { getByTestId, getByText } = renderWithToast(
+      <OrderModal instrument={instrument} onClose={onCloseMock} />
+    );
 
     fireEvent.changeText(getByTestId("order-quantity-input"), "5");
     fireEvent.press(getByTestId("order-submit-button"));
 
     await waitFor(() => {
-      expect(getByTestId("order-result")).toBeTruthy();
+      // Modal should call onClose
+      expect(onCloseMock).toHaveBeenCalled();
+      // Toast should be visible (we can search for the text in the provider)
+      expect(getByText(/Orden enviada: FILLED/)).toBeTruthy();
     });
   });
 
@@ -58,7 +69,9 @@ describe("OrderModal", () => {
       json: async () => ({ id: 12, status: "FILLED" })
     }) as jest.Mock;
 
-    const { getByTestId } = render(<OrderModal instrument={instrument} onClose={() => {}} />);
+    const { getByTestId } = renderWithToast(
+      <OrderModal instrument={instrument} onClose={() => { }} />
+    );
 
     fireEvent.press(getByTestId("order-type-limit"));
     fireEvent.changeText(getByTestId("order-quantity-input"), "1");

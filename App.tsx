@@ -19,6 +19,9 @@ import {
 } from "@expo-google-fonts/outfit";
 // ... imports
 
+import { ToastProvider } from "./src/components/Toast";
+// ... other imports
+
 export default function App() {
   const [fontsLoaded] = useFonts({
     Outfit_400Regular,
@@ -32,33 +35,35 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
-        <StatusBar style="light" />
-        <View style={styles.app}>
-          <View style={styles.tabs}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => setTab("instruments")}
-              style={[styles.tab, tab === "instruments" && styles.tabActive]}
-              testID="tab-instruments"
-            >
-              <Text style={styles.tabText}>Instrumentos</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => setTab("portfolio")}
-              style={[styles.tab, tab === "portfolio" && styles.tabActive]}
-              testID="tab-portfolio"
-            >
-              <Text style={styles.tabText}>Portfolio</Text>
-            </Pressable>
+    <ToastProvider>
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+        <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
+          <StatusBar style="light" />
+          <View style={styles.app}>
+            <View style={styles.tabs}>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setTab("instruments")}
+                style={[styles.tab, tab === "instruments" && styles.tabActive]}
+                testID="tab-instruments"
+              >
+                <Text style={styles.tabText}>Instrumentos</Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setTab("portfolio")}
+                style={[styles.tab, tab === "portfolio" && styles.tabActive]}
+                testID="tab-portfolio"
+              >
+                <Text style={styles.tabText}>Portfolio</Text>
+              </Pressable>
+            </View>
+            {tab === "instruments" && <InstrumentsScreen />}
+            {tab === "portfolio" && <PortfolioScreen />}
           </View>
-          {tab === "instruments" && <InstrumentsScreen />}
-          {tab === "portfolio" && <PortfolioScreen />}
-        </View>
-      </SafeAreaView>
-    </SafeAreaProvider>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </ToastProvider>
   );
 }
 

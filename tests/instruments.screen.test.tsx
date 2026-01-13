@@ -11,6 +11,11 @@ jest.mock("../src/hooks/useSearch", () => ({
 
 import { render } from "@testing-library/react-native";
 import { InstrumentsScreen } from "../src/screens/InstrumentsScreen";
+import { ToastProvider } from "../src/components/Toast";
+
+const renderWithToast = (component: React.ReactNode) => {
+  return render(<ToastProvider>{component}</ToastProvider>);
+};
 const sampleInstruments = [
   {
     id: 1,
@@ -49,7 +54,7 @@ describe("InstrumentsScreen", () => {
   });
 
   it("loads and renders instruments", async () => {
-    const { getByTestId, getByText } = render(<InstrumentsScreen />);
+    const { getByTestId, getByText } = renderWithToast(<InstrumentsScreen />);
 
     expect(getByText("Cocos Nuts")).toBeTruthy();
     expect(getByTestId("instrument-row-COCO")).toBeTruthy();

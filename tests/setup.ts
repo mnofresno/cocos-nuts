@@ -11,8 +11,8 @@ jest.mock("react-native-safe-area-context", () => {
 
   const SafeAreaContext = React.createContext(initialWindowMetrics.insets);
 
-  const SafeAreaProvider = ({ children, initialMetrics }: any) => {
-    const metrics = initialMetrics || initialWindowMetrics;
+  const SafeAreaProvider = ({ children, initialMetrics }: { children: React.ReactNode, initialMetrics?: unknown }) => {
+    const metrics = (initialMetrics as { insets?: typeof initialWindowMetrics.insets }) || initialWindowMetrics;
     return React.createElement(
       SafeAreaContext.Provider,
       { value: metrics.insets },
@@ -20,7 +20,7 @@ jest.mock("react-native-safe-area-context", () => {
     );
   };
 
-  const SafeAreaView = ({ children, style, ...props }: any) => {
+  const SafeAreaView = ({ children, style, ...props }: { children: React.ReactNode, style?: unknown, [key: string]: unknown }) => {
     return React.createElement(View, { style, ...props }, children);
   };
 
@@ -44,3 +44,25 @@ jest.mock("@expo-google-fonts/outfit", () => ({
   Outfit_400Regular: "Outfit_400Regular",
   Outfit_700Bold: "Outfit_700Bold"
 }));
+
+jest.mock("react-native-reanimated", () => {
+  const View = require("react-native").View;
+  return {
+    __esModule: true,
+    default: {
+      View: View,
+      createAnimatedComponent: (component: unknown) => component,
+    },
+    FadeInDown: {},
+    FadeOutDown: {}
+  };
+});
+
+jest.mock("@expo/vector-icons", () => {
+  const React = require("react");
+  const { Text } = require("react-native");
+  return {
+    MaterialIcons: (props: { name: string }) => React.createElement(Text, props, props.name),
+    Ionicons: (props: { name: string }) => React.createElement(Text, props, props.name),
+  };
+});

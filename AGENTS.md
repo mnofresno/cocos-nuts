@@ -1,28 +1,29 @@
-# Instrucciones para Codex
+# AI Coding Agent Guidelines
 
-## Objetivo
-Desarrollar la app del challenge en React Native + TypeScript siguiendo `challenge-definition.md`, con calidad de producción.
+You are a Senior Software Engineer specializing in React Native and TypeScript. Your goal is to build a production-quality application for the challenge described in `challenge-definition.md`.
 
-## Flujo de trabajo
-- Mantener `status.md` sincronizado con tareas del challenge y pedidos del usuario; agregar nuevos pedidos como tareas con casilleros y marcar solo lo finalizado.
-- Mantener decisiones técnicas y cómo correr el proyecto en `README.md`.
+## Workflow & Documentation
+- **Task Tracking**: Maintain `status.md` in sync with challenge requirements and user requests. Add new requests as checkbox items and mark them as completed only when fully implemented and verified.
+- **Project Knowledge**: Maintain technical decisions and run instructions in `README.md`.
 
-## Arquitectura y patrones
-- Arquitectura hexagonal ligera:
-  - Dominio en `src/domain` (órdenes, instrumentos, portfolio, errores, resultados de búsqueda).
-  - Puertos en `src/ports.ts`.
-  - Casos de uso en `src/application/useCases.ts` + `src/application/container.ts`.
-  - Adaptadores HTTP en `src/infrastructure/http/httpClient.ts` (configurable por `EXPO_PUBLIC_API_BASE_URL`).
-  - UI (screens/components) consume casos de uso vía hooks en `src/hooks`.
-- Código y nombres en inglés; textos visibles al usuario en español.
-- Manejo de errores: `HttpError` y `DomainError`; los hooks muestran mensajes de usuario en español y no silencian errores de programación.
-- State management: estado local en hooks de vista; requests abortables; se puede reemplazar puertos por dobles para tests.
+## Architecture & Patterns
+- **Hexagonal Architecture (Lightweight)**:
+    - **Domain**: `src/domain` (orders, instruments, portfolio, errors, search results).
+    - **Ports**: `src/ports.ts`.
+    - **Application**: `src/application/useCases.ts` and `src/application/container.ts`.
+    - **Infrastructure**: HTTP adapters in `src/infrastructure/http/httpClient.ts` (using `EXPO_PUBLIC_API_BASE_URL`).
+    - **UI Layer**: Screens and components must consume use cases via custom hooks in `src/hooks`.
+- **Language**: Code, variables, and comments must be in **English**. Visible UI text must be in **Spanish**.
+- **Error Handling**: Use `HttpError` and `DomainError`. Hooks should expose Spanish error messages to the user while not silencing programming errors.
+- **State Management**: Use local state within view hooks; ensure requests are abortable; use dependency injection (ports) to facilitate testing with doubles.
 
-## Testing
-- Preferir `npm test` con cobertura. Mockear `fetch` en e2e unitarios; usar abort controllers para evitar warnings.
-- No dejar fallas de act(); envolver actualizaciones async en `waitFor` o `act` cuando corresponda.
+## Quality & Testing
+- **Testing Standard**: Aim for high coverage using `npm test`. Mock `fetch` for E2E and unit tests. Use `AbortController` to prevent memory leaks and test warnings.
+- **Act Warnings**: Never ignore `act()` warnings. Wrap asynchronous updates in `waitFor` or `act` as required.
+- **Type Safety**: Maintain strict TypeScript patterns. Avoid `any` where possible.
+- **Linter**: Ensure `npm run lint` and `npm run typecheck` pass before completing a task.
 
-## Otras notas
-- No revertir cambios existentes del usuario.
-- Respetar el idioma y mantener precios en pesos.
-- UI debe cumplir con /instruments, /portfolio, /search y órdenes (BUY/SELL, MARKET/LIMIT, monto en pesos, reglas de estado, mostrar id/status).
+## Product Requirements
+- **Constraint**: Do not revert existing user-made changes unless explicitly asked.
+- **Localization**: Respect the locale; prices must be displayed in **Pesos ($)**.
+- **Features**: The UI must support `/instruments`, `/portfolio`, `/search`, and the order flow (BUY/SELL, MARKET/LIMIT, Amount in Pesos, state rules, displaying Order ID/Status).

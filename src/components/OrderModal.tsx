@@ -13,6 +13,7 @@ import { formatCurrency } from "../lib/format";
 import { Instrument } from "../domain/instrument";
 import { OrderSide, OrderType } from "../domain/orders";
 import { colors, fonts, radii, spacing } from "../theme";
+import { useToast } from "./Toast";
 
 type OrderModalProps = {
   instrument: Instrument | null;
@@ -35,43 +36,47 @@ export function OrderModal({ instrument, onClose }: OrderModalProps) {
   const [amount, setAmount] = useState("");
   const [price, setPrice] = useState("");
 
-  const { submit, submitting, error, result } = useSubmitOrder();
-
-  const computedQuantity = useMemo(() => {
-    if (!instrument) return 0;
-    if (mode === "quantity") {
-      const parsed = parsePositiveNumber(quantity);
-      return parsed ? Math.floor(parsed) : 0;
-    }
-
-    const parsedAmount = parsePositiveNumber(amount);
-    if (!parsedAmount) return 0;
-    return Math.max(0, Math.floor(parsedAmount / instrument.last_price));
-  }, [amount, instrument, mode, quantity]);
+  const { submit, submitting, error } = useSubmitOrder();
+  const toast = useToast();
 
   const priceValue = useMemo(() => {
-    if (type === OrderType.MARKET) return undefined;
-    const parsed = parsePositiveNumber(price);
-    return parsed ?? undefined;
-  }, [price, type]);
+    if (!instrument) return null;
+    if (type === OrderType.MARKET) return instrument.last_price;
+    return parsePositiveNumber(price);
+  }, [type, price, instrument]);
 
-  const canSubmit =
-    !!instrument &&
-    computedQuantity > 0 &&
-    (type === OrderType.MARKET || (priceValue ?? 0) > 0) &&
-    !submitting;
+  const computedQuantity = useMemo(() => {
+    if (mode === "quantity") return parsePositiveNumber(quantity);
+    const amountVal = parsePositiveNumber(amount);
+    if (!amountVal || !priceValue) return null;
+    return Math.floor(amountVal / priceValue);
+  }, [mode, quantity, amount, priceValue]);
+
+  const canSubmit = useMemo(() => {
+    if (!computedQuantity || computedQuantity <= 0) return false;
+    if (type === OrderType.LIMIT && !priceValue) return false;
+    return true;
+  }, [computedQuantity, type, priceValue]);
 
   if (!instrument) return null;
+
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
     try {
-      await submit({
+      const response = await submit({
         instrument_id: instrument.id,
         side,
         type,
-        quantity: computedQuantity,
-        ...(type === OrderType.LIMIT ? { price: priceValue } : {})
+        quantity: computedQuantity!,
+        ...(type === OrderType.LIMIT ? { price: priceValue! } : {})
+      });
+
+      // If success (response is returned without throwing)
+      onClose();
+      toast.show({
+        message: `Orden enviada: ${response.status} (ID: ${response.id})`,
+        type: "success"
       });
     } catch {
       // errors are handled in hook state
@@ -86,145 +91,143 @@ export function OrderModal({ instrument, onClose }: OrderModalProps) {
       onRequestClose={onClose}
       testID="order-modal"
     >
-      <Pressable style={styles.overlay} onPress={onClose} accessibilityRole="button" />
-      <View style={styles.sheet}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Orden {instrument.ticker}</Text>
-          <Pressable onPress={onClose} accessibilityRole="button">
-            <Text style={styles.close}>Cerrar</Text>
-          </Pressable>
-        </View>
-
-        <Text style={styles.subtitle}>{instrument.name}</Text>
-        <Text style={styles.helper}>Último precio: {formatCurrency(instrument.last_price)}</Text>
-
-        <View style={styles.group}>
-          <Text style={styles.label}>Lado</Text>
-          <View style={styles.row}>
-            <Pressable
-              style={[styles.chip, side === OrderSide.BUY && styles.chipActive]}
-              onPress={() => setSide(OrderSide.BUY)}
-              testID="order-side-buy"
-            >
-              <Text style={styles.chipText}>Comprar</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.chip, side === OrderSide.SELL && styles.chipActive]}
-              onPress={() => setSide(OrderSide.SELL)}
-              testID="order-side-sell"
-            >
-              <Text style={styles.chipText}>Vender</Text>
+      <View style={styles.overlay}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityRole="button" />
+        <View style={styles.sheet}>
+          {/* Header, Subtitle, Inputs... Same content as before */}
+          <View style={styles.header}>
+            <Text style={styles.title}>Orden {instrument.ticker}</Text>
+            <Pressable onPress={onClose} accessibilityRole="button">
+              <Text style={styles.close}>Cerrar</Text>
             </Pressable>
           </View>
-        </View>
 
-        <View style={styles.group}>
-          <Text style={styles.label}>Tipo</Text>
-          <View style={styles.row}>
-            <Pressable
-              style={[styles.chip, type === OrderType.MARKET && styles.chipActive]}
-              onPress={() => setType(OrderType.MARKET)}
-              testID="order-type-market"
-            >
-              <Text style={styles.chipText}>Market</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.chip, type === OrderType.LIMIT && styles.chipActive]}
-              onPress={() => setType(OrderType.LIMIT)}
-              testID="order-type-limit"
-            >
-              <Text style={styles.chipText}>Limit</Text>
-            </Pressable>
-          </View>
-        </View>
+          <Text style={styles.subtitle}>{instrument.name}</Text>
+          <Text style={styles.helper}>Último precio: {formatCurrency(instrument.last_price)}</Text>
 
-        <View style={styles.group}>
-          <Text style={styles.label}>Cantidad</Text>
-          <View style={styles.row}>
-            <Pressable
-              style={[styles.chip, mode === "quantity" && styles.chipActive]}
-              onPress={() => setMode("quantity")}
-              testID="order-mode-quantity"
-            >
-              <Text style={styles.chipText}>Cantidad exacta</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.chip, mode === "amount" && styles.chipActive]}
-              onPress={() => setMode("amount")}
-              testID="order-mode-amount"
-            >
-              <Text style={styles.chipText}>Monto en pesos</Text>
-            </Pressable>
+          {/* Groups for Side, Type, Quantity, Price... */}
+          <View style={styles.group}>
+            <Text style={styles.label}>Lado</Text>
+            <View style={styles.row}>
+              <Pressable
+                style={[styles.chip, side === OrderSide.BUY && styles.chipActive]}
+                onPress={() => setSide(OrderSide.BUY)}
+                testID="order-side-buy"
+              >
+                <Text style={styles.chipText}>Comprar</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.chip, side === OrderSide.SELL && styles.chipActive]}
+                onPress={() => setSide(OrderSide.SELL)}
+                testID="order-side-sell"
+              >
+                <Text style={styles.chipText}>Vender</Text>
+              </Pressable>
+            </View>
           </View>
-          {mode === "quantity" ? (
-            <TextInput
-              placeholder="Ej: 10"
-              placeholderTextColor={colors.textMuted}
-              keyboardType="numeric"
-              value={quantity}
-              onChangeText={setQuantity}
-              style={styles.input}
-              testID="order-quantity-input"
-            />
-          ) : (
-            <>
+
+          <View style={styles.group}>
+            <Text style={styles.label}>Tipo</Text>
+            <View style={styles.row}>
+              <Pressable
+                style={[styles.chip, type === OrderType.MARKET && styles.chipActive]}
+                onPress={() => setType(OrderType.MARKET)}
+                testID="order-type-market"
+              >
+                <Text style={styles.chipText}>Market</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.chip, type === OrderType.LIMIT && styles.chipActive]}
+                onPress={() => setType(OrderType.LIMIT)}
+                testID="order-type-limit"
+              >
+                <Text style={styles.chipText}>Limit</Text>
+              </Pressable>
+            </View>
+          </View>
+
+          <View style={styles.group}>
+            <Text style={styles.label}>Cantidad</Text>
+            <View style={styles.row}>
+              <Pressable
+                style={[styles.chip, mode === "quantity" && styles.chipActive]}
+                onPress={() => setMode("quantity")}
+                testID="order-mode-quantity"
+              >
+                <Text style={styles.chipText}>Cantidad exacta</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.chip, mode === "amount" && styles.chipActive]}
+                onPress={() => setMode("amount")}
+                testID="order-mode-amount"
+              >
+                <Text style={styles.chipText}>Monto en pesos</Text>
+              </Pressable>
+            </View>
+            {mode === "quantity" ? (
               <TextInput
-                placeholder="Ej: 50000"
+                placeholder="Ej: 10"
                 placeholderTextColor={colors.textMuted}
                 keyboardType="numeric"
-                value={amount}
-                onChangeText={setAmount}
+                value={quantity}
+                onChangeText={setQuantity}
                 style={styles.input}
-                testID="order-amount-input"
+                testID="order-quantity-input"
               />
-              <Text style={styles.helper}>
-                Enviaremos {computedQuantity} acciones (máximo sin fracciones).
-              </Text>
-            </>
-          )}
+            ) : (
+              <>
+                <TextInput
+                  placeholder="Ej: 50000"
+                  placeholderTextColor={colors.textMuted}
+                  keyboardType="numeric"
+                  value={amount}
+                  onChangeText={setAmount}
+                  style={styles.input}
+                  testID="order-amount-input"
+                />
+                <Text style={styles.helper}>
+                  Enviaremos {computedQuantity} acciones (máximo sin fracciones).
+                </Text>
+              </>
+            )}
+          </View>
+
+          {type === OrderType.LIMIT ? (
+            <View style={styles.group}>
+              <Text style={styles.label}>Precio límite</Text>
+              <TextInput
+                placeholder="Ej: 120.50"
+                placeholderTextColor={colors.textMuted}
+                keyboardType="numeric"
+                value={price}
+                onChangeText={setPrice}
+                style={styles.input}
+                testID="order-price-input"
+              />
+            </View>
+          ) : null}
+
+          {error ? (
+            <Text style={styles.error} testID="order-error">
+              {error}
+            </Text>
+          ) : null}
+
+          {/* Removed Result View here as we rely on Toast */}
+
+          <Pressable
+            style={[styles.submit, !canSubmit && styles.submitDisabled]}
+            onPress={handleSubmit}
+            disabled={!canSubmit}
+            testID="order-submit-button"
+          >
+            {submitting ? (
+              <ActivityIndicator color={colors.text} />
+            ) : (
+              <Text style={styles.submitText}>Enviar orden</Text>
+            )}
+          </Pressable>
         </View>
-
-        {type === OrderType.LIMIT ? (
-          <View style={styles.group}>
-            <Text style={styles.label}>Precio límite</Text>
-            <TextInput
-              placeholder="Ej: 120.50"
-              placeholderTextColor={colors.textMuted}
-              keyboardType="numeric"
-              value={price}
-              onChangeText={setPrice}
-              style={styles.input}
-              testID="order-price-input"
-            />
-          </View>
-        ) : null}
-
-        {error ? (
-          <Text style={styles.error} testID="order-error">
-            {error}
-          </Text>
-        ) : null}
-
-        {result ? (
-          <View style={styles.result} testID="order-result">
-            <Text style={styles.resultTitle}>Orden enviada</Text>
-            <Text style={styles.resultText}>ID: {result.id}</Text>
-            <Text style={styles.resultText}>Status: {result.status}</Text>
-          </View>
-        ) : null}
-
-        <Pressable
-          style={[styles.submit, !canSubmit && styles.submitDisabled]}
-          onPress={handleSubmit}
-          disabled={!canSubmit}
-          testID="order-submit-button"
-        >
-          {submitting ? (
-            <ActivityIndicator color={colors.text} />
-          ) : (
-            <Text style={styles.submitText}>Enviar orden</Text>
-          )}
-        </Pressable>
       </View>
     </Modal>
   );
@@ -233,13 +236,11 @@ export function OrderModal({ instrument, onClose }: OrderModalProps) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "#00000080"
+    backgroundColor: "#00000080",
+    justifyContent: "center",
+    padding: spacing.lg
   },
   sheet: {
-    position: "absolute",
-    left: spacing.lg,
-    right: spacing.lg,
-    top: spacing.xl,
     backgroundColor: colors.surface,
     borderRadius: radii.lg,
     padding: spacing.lg,
