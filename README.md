@@ -22,6 +22,13 @@ npm install
 - `npx expo start --ios`
 - `npx expo start --web`
 
+## Instalar APK Android con ADB
+1. Configura la API si aplica: `EXPO_PUBLIC_API_BASE_URL=https://mi-api` en el shell antes de build.
+2. Genera los proyectos nativos la primera vez: `npx expo prebuild --platform android`.
+3. Compila la APK de release: `cd android && ./gradlew assembleRelease`.
+4. Instala en el dispositivo con depuración USB activa: `adb install -r android/app/build/outputs/apk/release/app-release.apk`.
+   - Si ya tienes una APK desde CI/GitHub Releases, salta a este paso y usa la ruta de ese archivo.
+
 ## Build web y Docker
 ```bash
 npx expo export --platform web

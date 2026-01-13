@@ -10,7 +10,7 @@ type SearchState = {
 };
 
 export function useSearch(query: string) {
-  const trimmed = query.trim();
+  const trimmed = query.trim().toUpperCase();
   const [state, setState] = useState<SearchState>({
     loading: false,
     error: null,

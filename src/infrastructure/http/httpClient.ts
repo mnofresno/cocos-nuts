@@ -27,43 +27,85 @@ async function parseJson<T>(response: Response, context: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+function createAbortableSignal(signal?: AbortSignal, timeoutMs = 8000) {
+  const controller = new AbortController();
+
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  const abortFromParent = () => controller.abort();
+  if (signal) {
+    if (signal.aborted) {
+      controller.abort();
+    } else {
+      signal.addEventListener("abort", abortFromParent);
+    }
+  }
+
+  const cleanup = () => {
+    clearTimeout(timeout);
+    signal?.removeEventListener("abort", abortFromParent);
+  };
+
+  return { signal: controller.signal, cleanup };
+}
+
 export function createHttpClient(baseUrl: string = API_BASE_URL) {
   const buildUrl = (path: string) => `${baseUrl}${path}`;
 
   const instruments: InstrumentsRepository = {
     list: async (signal?: AbortSignal) => {
-      const response = await fetch(buildUrl("/instruments"), { signal });
-      return parseJson<Instrument[]>(response, "Failed to fetch instruments");
+      const { signal: mergedSignal, cleanup } = createAbortableSignal(signal);
+      try {
+        const response = await fetch(buildUrl("/instruments"), { signal: mergedSignal });
+        return parseJson<Instrument[]>(response, "Failed to fetch instruments");
+      } finally {
+        cleanup();
+      }
     }
   };
 
   const portfolio: PortfolioRepository = {
     list: async (signal?: AbortSignal) => {
-      const response = await fetch(buildUrl("/portfolio"), { signal });
-      return parseJson<PortfolioPosition[]>(response, "Failed to fetch portfolio");
+      const { signal: mergedSignal, cleanup } = createAbortableSignal(signal);
+      try {
+        const response = await fetch(buildUrl("/portfolio"), { signal: mergedSignal });
+        return parseJson<PortfolioPosition[]>(response, "Failed to fetch portfolio");
+      } finally {
+        cleanup();
+      }
     }
   };
 
   const search: SearchRepository = {
     search: async (query: string, signal?: AbortSignal) => {
-      const response = await fetch(
-        `${buildUrl("/search")}?query=${encodeURIComponent(query)}`,
-        { signal }
-      );
-      return parseJson<Instrument[]>(response, "Failed to search instruments");
+      const { signal: mergedSignal, cleanup } = createAbortableSignal(signal);
+      try {
+        const response = await fetch(
+          `${buildUrl("/search")}?query=${encodeURIComponent(query)}`,
+          { signal: mergedSignal }
+        );
+        return parseJson<Instrument[]>(response, "Failed to search instruments");
+      } finally {
+        cleanup();
+      }
     }
   };
 
   const orders: OrdersGateway = {
     placeOrder: async (payload: OrderPayload, signal?: AbortSignal) => {
-      const response = await fetch(buildUrl("/orders"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        signal
-      });
+      const { signal: mergedSignal, cleanup } = createAbortableSignal(signal);
+      try {
+        const response = await fetch(buildUrl("/orders"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: mergedSignal
+        });
 
-      return parseJson<OrderResponse>(response, "Failed to place order");
+        return parseJson<OrderResponse>(response, "Failed to place order");
+      } finally {
+        cleanup();
+      }
     }
   };
 
@@ -71,4 +113,3 @@ export function createHttpClient(baseUrl: string = API_BASE_URL) {
 }
 
 export type HttpClientAdapters = ReturnType<typeof createHttpClient>;
-

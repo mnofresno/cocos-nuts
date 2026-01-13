@@ -29,3 +29,5 @@
 - [x] Verificación de funcionalidades vs challenge-definition.md
 - [x] Integrar buscador dentro de la tab de instrumentos
 - [x] Ajustar tabs para respetar el safe area y no cortarlos en pantalla
+- [x] Verificar sugerencias para prueba en dispositivo (spinner de instrumentos, logs, base URL)
+- [x] Documentar instalación de APK Android vía adb (sin Expo live reload)

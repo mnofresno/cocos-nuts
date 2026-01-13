@@ -24,6 +24,7 @@ export function useInstruments() {
       })
       .catch((error) => {
         if (error?.name === "AbortError") return;
+        console.warn("Failed to load instruments", error);
         setState({ loading: false, error: "No se pudo cargar instrumentos.", data: [] });
       });
 
