@@ -12,8 +12,24 @@ import { colors, fonts, radii, spacing } from "./src/theme";
 
 type TabKey = "instruments" | "portfolio" | "search";
 
+import {
+  Outfit_400Regular,
+  Outfit_700Bold,
+  useFonts
+} from "@expo-google-fonts/outfit";
+// ... imports
+
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Outfit_400Regular,
+    Outfit_700Bold
+  });
+
   const [tab, setTab] = useState<TabKey>("instruments");
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>

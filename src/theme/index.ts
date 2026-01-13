@@ -30,7 +30,7 @@ export const radii = {
 };
 
 export const fonts = {
-  heading: Platform.select({ ios: 'AvenirNext-DemiBold', android: 'serif' }),
-  body: Platform.select({ ios: 'AvenirNext-Regular', android: 'serif' }),
+  heading: 'Outfit_700Bold',
+  body: 'Outfit_400Regular',
   mono: Platform.select({ ios: 'Menlo', android: 'monospace' }),
 };
